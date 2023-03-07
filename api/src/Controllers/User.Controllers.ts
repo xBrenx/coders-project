@@ -1,4 +1,5 @@
 import { Request, Response } from "express";
+import { generateToken } from "../config/jwt.config";
 import {User} from "../Models/users";
 const { getTokenData } = require("../config/jwt.config");
 const { getTemplate, sendEmail } = require("../config/mail.config");
@@ -29,16 +30,19 @@ export const getUser = async (req: Request, res: Response) => {
 export const createUser = async (req: Request, res: Response) => {
   try {
     const { name, email, password, done } = req.body
-    let user = await User.findOne({
-      email: email, 
+    let userName = await User.findOne({
       name: name,
     })
-    if(user){
+    let userEmail = await User.findOne({
+      email: email, 
+    })
+    if(userName || userEmail){
       return done(null, false, console.log("This user name already exists"));
     }else{
       const code = uuidv4();
-      user = new User({ name, email, code, password});
-      const token = getTokenData({ email, code });
+      let user = new User({ name, email, code, password});
+      const token = generateToken({ email, code });
+      console.log("create user linea 44",token)
       const template = getTemplate(name, token);
 
       await sendEmail(email, "Confirm your account", template);
@@ -61,20 +65,21 @@ export const createUser = async (req: Request, res: Response) => {
 };
 export const confirm = async (req: Request, res: Response) => {
   try {
-    const { token } = req.body;
+    const { token } = req.params;
     
     const data =  getTokenData(token);
-    
+    console.log("data que llega al confirm desde getTokenData 70", data)
     
     if (data === null) {
       return res.json({ success: false, msg: "Error. Data couldn't be acccessed " });
     }
 
     const { email, code } = data.data;
-
-    const user = await User.findOne({
-      code: code 
+    console.log("email que viene por data en confirm linea 77",email)
+    let user = await User.findOne({
+      email : email 
     });
+    console.log("create user linea 81", user)
     if (user === null) {
       return res.json({
         success: false,
@@ -86,9 +91,10 @@ export const confirm = async (req: Request, res: Response) => {
     }
     user.status = "VERIFIED";
     await user.save();
-    return res.redirect("http://localhost:3005/home");
+    return res.redirect("http://localhost:3000/home");
     //return res.redirect("")
   } catch (error) {
+    console.log("error del confirm linea 96",error)
     return res.json({
       success: false,
       msg: "Error al confirmar usuario",
