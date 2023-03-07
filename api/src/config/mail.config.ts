@@ -46,9 +46,7 @@ const getTemplate = (email: any,token: any)=>{
           <h2>Hola ${ email }</h2>
           <p>Para confirmar tu cuenta, ingresa al siguiente enlace</p>
           <a
-              href="http://localhost:3001/confirm/${token}
-              // href="http://localhost:3000/user/confirm/${token}"
-              // href="https://frontpf-production-eafa.up.railway.app/user/confirm/${token}"
+              href="http://localhost:3001/users/confirm/${token}
               target="_blank"
           >Confirmar Cuenta</a>
       </div>
