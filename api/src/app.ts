@@ -1,9 +1,11 @@
 import express from "express";
-import dotenv from "dotenv";
 import bodyParser from "body-parser";
 import cors from "cors";
 import logger from "morgan";
 import router from "./routes/index.route";
+import * as dotenv from "dotenv";
+
+dotenv.config()
 
 const server = express();
 const PORT = process.env.PORT || 3005;
