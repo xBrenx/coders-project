@@ -2,8 +2,8 @@ const nodemailer = require ('nodemailer')
 
 
 const mail ={
-  user: 'ibroughtPopCorn@gmail.com',
-  pass: 'xakspcagfydyfwnf'
+  user: 'thefullstackstoree@gmail.com',
+  pass: 'crpujzwivvakhcqh'
 }
 
 let transporter = nodemailer.createTransport({
@@ -46,7 +46,7 @@ const getTemplate = (email: any,token: any)=>{
           <h2>Hola ${ email }</h2>
           <p>Para confirmar tu cuenta, ingresa al siguiente enlace</p>
           <a
-              href="http://localhost:3001/users/confirm/${token}
+              href="http://localhost:3001/users/confirm/${token}"
               target="_blank"
           >Confirmar Cuenta</a>
       </div>

@@ -17,7 +17,7 @@ server.use(logger("dev"));
 server.use(express.json());
 
 //local
-server.use((req, res, next)=>{
+server.use((_req, res, next)=>{
   res.header('Access-Control-Allow-Origin', `http://localhost:${PORT}`)
   res.header('Access-Control-Allow-Credentials', 'true');
   res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept');
@@ -36,7 +36,7 @@ server.use((req, res, next)=>{
 //   next();
 // })
 
-server.use(function(req, res, next) {
+server.use(function(_req, res, next) {
   res.header("Access-Control-Allow-Origin", "http://localhost:3000");
   res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
   next();

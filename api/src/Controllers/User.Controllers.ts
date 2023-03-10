@@ -1,12 +1,12 @@
 import { Request, Response } from "express";
 import { generateToken } from "../config/jwt.config";
-import {User} from "../Models/users";
+import { User } from "../Models/users";
 const { getTokenData } = require("../config/jwt.config");
 const { getTemplate, sendEmail } = require("../config/mail.config");
-const {v4 : uuidv4 } = require("uuid");
+const { v4: uuidv4 } = require("uuid");
 
 // get all users
-export const getUsers = async (req: Request, res: Response) => {
+export const getUsers = async (_req: Request, res: Response) => {
   try {
     const users = await User.find();
     res.json(users);
@@ -29,31 +29,29 @@ export const getUser = async (req: Request, res: Response) => {
 
 export const createUser = async (req: Request, res: Response) => {
   try {
-    const { name, email, password, done } = req.body
+    const { name, email, password, done } = req.body;
     let userName = await User.findOne({
       name: name,
-    })
+    });
     let userEmail = await User.findOne({
-      email: email, 
-    })
-    if(userName || userEmail){
+      email: email,
+    });
+    if (userName || userEmail) {
       return done(null, false, console.log("This user name already exists"));
-    }else{
+    } else {
       const code = uuidv4();
-      let user = new User({ name, email, code, password});
+      let user = new User({ name, email, code, password });
       const token = generateToken({ email, code });
-      console.log("create user linea 44",token)
       const template = getTemplate(name, token);
 
       await sendEmail(email, "Confirm your account", template);
-        await user.save();
+      await user.save();
 
-        res.json({
-          success: true,
-          msg: "User successfully registered",
-        });
+      res.json({
+        success: true,
+        msg: "User successfully registered",
+      });
     }
-
   } catch (error) {
     console.log(error);
     return res.json({
@@ -61,25 +59,24 @@ export const createUser = async (req: Request, res: Response) => {
       msg: "Something went wrong. Registration has failed",
     });
   }
-  
 };
 export const confirm = async (req: Request, res: Response) => {
   try {
     const { token } = req.params;
-    
-    const data =  getTokenData(token);
-    console.log("data que llega al confirm desde getTokenData 70", data)
-    
+
+    const data = getTokenData(token);
+
     if (data === null) {
-      return res.json({ success: false, msg: "Error. Data couldn't be acccessed " });
+      return res.json({
+        success: false,
+        msg: "Error. Data couldn't be acccessed ",
+      });
     }
 
-    const { email, code } = data.data;
-    console.log("email que viene por data en confirm linea 77",email)
+    const { email, code } = data;
     let user = await User.findOne({
-      email : email 
+      email: email,
     });
-    console.log("create user linea 81", user)
     if (user === null) {
       return res.json({
         success: false,
@@ -94,7 +91,6 @@ export const confirm = async (req: Request, res: Response) => {
     return res.redirect("http://localhost:3000/home");
     //return res.redirect("")
   } catch (error) {
-    console.log("error del confirm linea 96",error)
     return res.json({
       success: false,
       msg: "Error al confirmar usuario",
@@ -107,7 +103,8 @@ export const confirm = async (req: Request, res: Response) => {
 export const updateUser = async (req: Request, res: Response) => {
   const { email, passowrd } = req.body;
   try {
-    const user = await User.findByIdAndUpdate(req.params.id, {
+    await User.findByIdAndUpdate(req.params.id, {
+      // trae el usuario por id y actualiza email y passwor
       email,
       passowrd,
     });
@@ -121,7 +118,7 @@ export const updateUser = async (req: Request, res: Response) => {
 
 export const deleteUser = async (req: Request, res: Response) => {
   try {
-    const user = await User.findByIdAndDelete(req.params.id);
+    await User.findByIdAndDelete(req.params.id);
     res.json({ message: " User deleted successfully" });
   } catch (error) {
     res.json({ message: " Error deleting user " });
