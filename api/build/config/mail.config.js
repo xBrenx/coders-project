@@ -8,10 +8,18 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
+Object.defineProperty(exports, "__esModule", { value: true });
 const nodemailer = require('nodemailer');
+const dotenv_1 = __importDefault(require("dotenv"));
+dotenv_1.default.config();
+const EMAIL = process.env.EMAIL;
+const EMAIL_PSSWRD = process.env.EMAIL_PSSWRD;
 const mail = {
-    user: 'thefullstackstoree@gmail.com',
-    pass: 'crpujzwivvakhcqh'
+    user: EMAIL,
+    pass: EMAIL_PSSWRD
 };
 let transporter = nodemailer.createTransport({
     host: "smtp.gmail.com",

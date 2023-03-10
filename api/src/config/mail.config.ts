@@ -1,9 +1,15 @@
 const nodemailer = require ('nodemailer')
+import dotenv from "dotenv"
+
+dotenv.config()
+
+const EMAIL = process.env.EMAIL;
+const EMAIL_PSSWRD = process.env.EMAIL_PSSWRD;
 
 
 const mail ={
-  user: 'thefullstackstoree@gmail.com',
-  pass: 'crpujzwivvakhcqh'
+  user: EMAIL,
+  pass: EMAIL_PSSWRD
 }
 
 let transporter = nodemailer.createTransport({
