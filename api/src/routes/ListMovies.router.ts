@@ -3,7 +3,7 @@ import allPopularMovies from "../Controllers/AllPopularMovies.Controllers";
 
 const router = Router();
 
-router.get("/populars", async (req, res) => {
+router.get("/populars", async (_req, res) => {
   try {
     const allPopulars = await allPopularMovies();
     res.status(200).send(allPopulars);

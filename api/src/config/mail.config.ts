@@ -1,9 +1,15 @@
 const nodemailer = require ('nodemailer')
+import dotenv from "dotenv"
+
+dotenv.config()
+
+const EMAIL = process.env.EMAIL;
+const EMAIL_PSSWRD = process.env.EMAIL_PSSWRD;
 
 
 const mail ={
-  user: 'ibroughtPopCorn@gmail.com',
-  pass: 'xakspcagfydyfwnf'
+  user: EMAIL,
+  pass: EMAIL_PSSWRD
 }
 
 let transporter = nodemailer.createTransport({
@@ -46,7 +52,7 @@ const getTemplate = (email: any,token: any)=>{
           <h2>Hola ${ email }</h2>
           <p>Para confirmar tu cuenta, ingresa al siguiente enlace</p>
           <a
-              href="http://localhost:3001/users/confirm/${token}
+              href="http://localhost:3001/users/confirm/${token}"
               target="_blank"
           >Confirmar Cuenta</a>
       </div>

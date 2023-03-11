@@ -58,5 +58,6 @@ next-env.d.ts
 # ignore package-lock.json in all subdirectories
 **/package-lock.json
 
-#ignore .env
+#ignore 
+.env
 
