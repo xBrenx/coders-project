@@ -12,6 +12,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.getTemplate = exports.sendEmail = void 0;
 const nodemailer = require('nodemailer');
 const dotenv_1 = __importDefault(require("dotenv"));
 dotenv_1.default.config();
@@ -47,6 +48,7 @@ const sendEmail = (email, subject, html) => __awaiter(void 0, void 0, void 0, fu
         console.log("Something went wrong with your email", error);
     }
 });
+exports.sendEmail = sendEmail;
 const getTemplate = (email, token) => {
     return `
       <head>
@@ -64,8 +66,9 @@ const getTemplate = (email, token) => {
       </div>
     `;
 };
+exports.getTemplate = getTemplate;
 module.exports = {
-    sendEmail,
-    getTemplate,
+    sendEmail: exports.sendEmail,
+    getTemplate: exports.getTemplate,
 };
 //# sourceMappingURL=mail.config.js.map

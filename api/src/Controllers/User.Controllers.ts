@@ -1,9 +1,14 @@
 import { Request, Response } from "express";
 import { generateToken } from "../config/jwt.config";
 import { User } from "../Models/users";
-const { getTokenData } = require("../config/jwt.config");
-const { getTemplate, sendEmail } = require("../config/mail.config");
-const { v4: uuidv4 } = require("uuid");
+import bcrypt from "bcrypt";
+import dotenv from "dotenv";
+import { getTokenData } from"../config/jwt.config";
+import { getTemplate, sendEmail } from "../config/mail.config";
+import { v4 } from "uuid";
+dotenv.config()
+
+const BCRYPT_SALT_ROUNDS= 12
 
 // get all users
 export const getUsers = async (_req: Request, res: Response) => {
@@ -36,11 +41,12 @@ export const createUser = async (req: Request, res: Response) => {
     let userEmail = await User.findOne({
       email: email,
     });
+    let passwordHashed = await bcrypt.hash(password, BCRYPT_SALT_ROUNDS) 
     if (userName || userEmail) {
       return done(null, false, console.log("This user name already exists"));
     } else {
-      const code = uuidv4();
-      let user = new User({ name, email, code, password });
+      const code = v4();
+      let user = new User({ name, email, code, password:passwordHashed});
       const token = generateToken({ email, code });
       const template = getTemplate(name, token);
 

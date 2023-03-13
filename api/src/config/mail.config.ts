@@ -3,8 +3,8 @@ import dotenv from "dotenv"
 
 dotenv.config()
 
-const EMAIL = process.env.EMAIL;
-const EMAIL_PSSWRD = process.env.EMAIL_PSSWRD;
+const EMAIL = process.env.EMAIL
+const EMAIL_PSSWRD = process.env.EMAIL_PSSWRD
 
 
 const mail ={
@@ -26,7 +26,7 @@ let transporter = nodemailer.createTransport({
 });
 
 
-const sendEmail = async (email: any, subject: any,html: any)=>{
+export const sendEmail = async (email: any, subject: any,html: any)=>{
   try{
       await   transporter.sendMail({
           from:`${mail.user}`,
@@ -41,7 +41,7 @@ const sendEmail = async (email: any, subject: any,html: any)=>{
 
 }
 
-const getTemplate = (email: any,token: any)=>{
+export const getTemplate = (email: any,token: any)=>{
   return `
       <head>
           <link rel="stylesheet" href="./style.css">
