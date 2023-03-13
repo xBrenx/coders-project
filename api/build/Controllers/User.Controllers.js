@@ -35,12 +35,24 @@ const getUsers = (_req, res) => __awaiter(void 0, void 0, void 0, function* () {
 exports.getUsers = getUsers;
 // get user by id
 const getUser = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    try {
-        const user = yield users_1.User.findById(req.params.id);
-        res.json(user);
+    const { email, password } = req.body;
+    console.log(email);
+    if (req.params.id) {
+        try {
+            const user = yield users_1.User.findById(req.params.id);
+            res.json(user);
+        }
+        catch (error) {
+            console.log(error);
+        }
     }
-    catch (error) {
-        console.log(error);
+    if (email) {
+        const search = yield users_1.User.find({ email: email });
+        let user = search[0];
+        if (user) {
+            let validation = yield bcrypt_1.default.compare(password, user.password);
+            validation ? res.json(user) : res.send({ msg: "Wrong password" });
+        }
     }
 });
 exports.getUser = getUser;
@@ -118,12 +130,13 @@ const confirm = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
 exports.confirm = confirm;
 // update user
 const updateUser = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const { email, passowrd } = req.body;
+    const { email, password } = req.body;
+    let passwordHashed = yield bcrypt_1.default.hash(password, BCRYPT_SALT_ROUNDS);
     try {
         yield users_1.User.findByIdAndUpdate(req.params.id, {
             // trae el usuario por id y actualiza email y passwor
             email,
-            passowrd,
+            password: passwordHashed,
         });
         res.json({ message: " User updated successfully" });
     }
