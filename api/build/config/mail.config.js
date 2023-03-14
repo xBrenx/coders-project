@@ -12,7 +12,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getTemplate = exports.sendEmail = void 0;
+exports.getForgotPassTemplate = exports.getTemplate = exports.sendEmail = void 0;
 const nodemailer = require('nodemailer');
 const dotenv_1 = __importDefault(require("dotenv"));
 dotenv_1.default.config();
@@ -67,8 +67,27 @@ const getTemplate = (email, token) => {
     `;
 };
 exports.getTemplate = getTemplate;
+const getForgotPassTemplate = (email, token) => {
+    return `
+          <head>
+              <link rel="stylesheet" href="./style.css">
+          </head>
+          
+          <div id="email___content">
+              <img src="https://www.flickr.com/photos/197399024@N05/52623616952/in/dateposted-public/" alt="">
+              <h2>Hola ${email}</h2>
+              <p>Para establecer una nueva contraseña has click en el siguiente enlace</p>
+              <a
+                  href="http://localhost:3001/pasword/reset/${token}"
+                  target="_blank"
+              >Establecer nueva contraseña</a>
+          </div>
+        `;
+};
+exports.getForgotPassTemplate = getForgotPassTemplate;
 module.exports = {
     sendEmail: exports.sendEmail,
     getTemplate: exports.getTemplate,
+    getForgotPassTemplate: exports.getForgotPassTemplate
 };
 //# sourceMappingURL=mail.config.js.map
