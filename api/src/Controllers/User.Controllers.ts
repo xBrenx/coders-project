@@ -1,9 +1,14 @@
 import { Request, Response } from "express";
 import { generateToken } from "../config/jwt.config";
 import { User } from "../Models/users";
-const { getTokenData } = require("../config/jwt.config");
-const { getTemplate, sendEmail } = require("../config/mail.config");
-const { v4: uuidv4 } = require("uuid");
+import bcrypt from "bcrypt";
+import dotenv from "dotenv";
+import { getTokenData } from "../config/jwt.config";
+import { getTemplate, sendEmail } from "../config/mail.config";
+import { v4 } from "uuid";
+dotenv.config();
+
+const BCRYPT_SALT_ROUNDS = 12;
 
 // get all users
 export const getUsers = async (_req: Request, res: Response) => {
@@ -17,11 +22,24 @@ export const getUsers = async (_req: Request, res: Response) => {
 
 // get user by id
 export const getUser = async (req: Request, res: Response) => {
-  try {
-    const user = await User.findById(req.params.id);
-    res.json(user);
-  } catch (error) {
-    console.log(error);
+  const { email, password } = req.body;
+  console.log(email)
+  if (req.params.id) {
+    try {
+      const user = await User.findById(req.params.id);
+      res.json(user);
+    } catch (error) {
+      console.log(error);
+    }
+  }
+  if (email) {
+      const search  = await User.find({email: email});
+      let user = search[0]
+      if (user){
+        let validation = await bcrypt.compare(password, user.password)
+        validation ? res.json(user) : res.send({msg: "Wrong password"}) 
+    }
+
   }
 };
 
@@ -36,11 +54,12 @@ export const createUser = async (req: Request, res: Response) => {
     let userEmail = await User.findOne({
       email: email,
     });
+    let passwordHashed = await bcrypt.hash(password, BCRYPT_SALT_ROUNDS);
     if (userName || userEmail) {
       return done(null, false, console.log("This user name already exists"));
     } else {
-      const code = uuidv4();
-      let user = new User({ name, email, code, password });
+      const code = v4();
+      let user = new User({ name, email, code, password: passwordHashed });
       const token = generateToken({ email, code });
       const template = getTemplate(name, token);
 
@@ -101,12 +120,13 @@ export const confirm = async (req: Request, res: Response) => {
 // update user
 
 export const updateUser = async (req: Request, res: Response) => {
-  const { email, passowrd } = req.body;
+  const { email, password } = req.body;
+  let passwordHashed = await bcrypt.hash(password, BCRYPT_SALT_ROUNDS);
   try {
     await User.findByIdAndUpdate(req.params.id, {
       // trae el usuario por id y actualiza email y passwor
       email,
-      passowrd,
+      password: passwordHashed,
     });
     res.json({ message: " User updated successfully" });
   } catch (error) {

@@ -10,4 +10,5 @@ router.use('/users/', routerUser)
 router.use("/details/", routerDetail)
 
 
+
 export default router;

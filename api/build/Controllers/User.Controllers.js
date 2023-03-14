@@ -8,13 +8,20 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.deleteUser = exports.updateUser = exports.confirm = exports.createUser = exports.getUser = exports.getUsers = void 0;
 const jwt_config_1 = require("../config/jwt.config");
 const users_1 = require("../Models/users");
-const { getTokenData } = require("../config/jwt.config");
-const { getTemplate, sendEmail } = require("../config/mail.config");
-const { v4: uuidv4 } = require("uuid");
+const bcrypt_1 = __importDefault(require("bcrypt"));
+const dotenv_1 = __importDefault(require("dotenv"));
+const jwt_config_2 = require("../config/jwt.config");
+const mail_config_1 = require("../config/mail.config");
+const uuid_1 = require("uuid");
+dotenv_1.default.config();
+const BCRYPT_SALT_ROUNDS = 12;
 // get all users
 const getUsers = (_req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
@@ -28,12 +35,24 @@ const getUsers = (_req, res) => __awaiter(void 0, void 0, void 0, function* () {
 exports.getUsers = getUsers;
 // get user by id
 const getUser = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    try {
-        const user = yield users_1.User.findById(req.params.id);
-        res.json(user);
+    const { email, password } = req.body;
+    console.log(email);
+    if (req.params.id) {
+        try {
+            const user = yield users_1.User.findById(req.params.id);
+            res.json(user);
+        }
+        catch (error) {
+            console.log(error);
+        }
     }
-    catch (error) {
-        console.log(error);
+    if (email) {
+        const search = yield users_1.User.find({ email: email });
+        let user = search[0];
+        if (user) {
+            let validation = yield bcrypt_1.default.compare(password, user.password);
+            validation ? res.json(user) : res.send({ msg: "Wrong password" });
+        }
     }
 });
 exports.getUser = getUser;
@@ -47,15 +66,16 @@ const createUser = (req, res) => __awaiter(void 0, void 0, void 0, function* () 
         let userEmail = yield users_1.User.findOne({
             email: email,
         });
+        let passwordHashed = yield bcrypt_1.default.hash(password, BCRYPT_SALT_ROUNDS);
         if (userName || userEmail) {
             return done(null, false, console.log("This user name already exists"));
         }
         else {
-            const code = uuidv4();
-            let user = new users_1.User({ name, email, code, password });
+            const code = (0, uuid_1.v4)();
+            let user = new users_1.User({ name, email, code, password: passwordHashed });
             const token = (0, jwt_config_1.generateToken)({ email, code });
-            const template = getTemplate(name, token);
-            yield sendEmail(email, "Confirm your account", template);
+            const template = (0, mail_config_1.getTemplate)(name, token);
+            yield (0, mail_config_1.sendEmail)(email, "Confirm your account", template);
             yield user.save();
             res.json({
                 success: true,
@@ -75,7 +95,7 @@ exports.createUser = createUser;
 const confirm = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const { token } = req.params;
-        const data = getTokenData(token);
+        const data = (0, jwt_config_2.getTokenData)(token);
         if (data === null) {
             return res.json({
                 success: false,
@@ -110,12 +130,13 @@ const confirm = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
 exports.confirm = confirm;
 // update user
 const updateUser = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const { email, passowrd } = req.body;
+    const { email, password } = req.body;
+    let passwordHashed = yield bcrypt_1.default.hash(password, BCRYPT_SALT_ROUNDS);
     try {
         yield users_1.User.findByIdAndUpdate(req.params.id, {
             // trae el usuario por id y actualiza email y passwor
             email,
-            passowrd,
+            password: passwordHashed,
         });
         res.json({ message: " User updated successfully" });
     }
