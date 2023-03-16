@@ -1,16 +1,16 @@
-
 import React from 'react';
 import Head from 'next/head'
+import Landing from '@/components/Landing/Landing';
 
 
 export default function Home() {
   return (
     <>
       <Head>
-        <title>CodersFlix ahre</title>
+        <title>CodersFlix</title>
       </Head>
       <main>
-        <p>index.tsx</p>
+        <Landing />
       </main>
     </>
   )
