@@ -4,6 +4,13 @@ import { store } from '../../redux/store/store';
 import { Auth0Provider } from '@auth0/auth0-react';
 import type { AppProps } from 'next/app';
 import { useRouter } from 'next/router';
+
+
+let AUTH_DOMAIN = process.env.AUTH_DOMAIN || "domain de tu vieja"; 
+let AUTH_CLIENT_ID = process.env.AUTH_CLIENT_ID || "id de tu vieja";
+let AUTH_REDIRECT_URI = process.env.AUTH_REDIRECT_URI;
+let AUTH_LOGOUT_REDIRECT_URI = process.env.AUTH_LOGOUT_REDIRECT_URI;
+
 type MyAppProps = {
   Component: React.ElementType;
   pageProps: Record<string, unknown>;
@@ -17,15 +24,19 @@ function MyApp({ Component, pageProps }: MyAppProps): JSX.Element {
     }
   },[router]);
   return (
-    <Auth0Provider 
-    domain:string={process.env.AUTH0_DOMAIN}
-    clientId:string={process.env.AUTH0_CLIENT_ID}
-    redirectUri={process.env.AUTH0_REDIRECT_URI}
+    <Provider store={store}>
+      <Auth0Provider 
+    domain={AUTH_DOMAIN}
+    clientId={AUTH_CLIENT_ID}
+    authorizationParams={{
+      redirect_uri: AUTH_REDIRECT_URI
+    }}
     onRedirectCallback={(state)=>{
       router.replace(state?.returnTo || '/');
     }}>
       <Component {...pageProps} />
       </Auth0Provider>
+    </Provider>
   );
 }
 
