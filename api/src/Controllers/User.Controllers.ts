@@ -2,11 +2,10 @@ import { Request, Response } from "express";
 import { generateToken } from "../config/jwt.config";
 import { User } from "../Models/users";
 import bcrypt from "bcrypt";
-import dotenv from "dotenv";
 import { getTokenData } from "../config/jwt.config";
 import { getTemplate, sendEmail } from "../config/mail.config";
 import { v4 } from "uuid";
-dotenv.config();
+
 
 const BCRYPT_SALT_ROUNDS = 12;
 
@@ -20,10 +19,9 @@ export const getUsers = async (_req: Request, res: Response) => {
   }
 };
 
-// get user by id
+// get user by id & get user vy email para login
 export const getUser = async (req: Request, res: Response) => {
   const { email, password } = req.body;
-  console.log(email)
   if (req.params.id) {
     try {
       const user = await User.findById(req.params.id);
@@ -38,6 +36,8 @@ export const getUser = async (req: Request, res: Response) => {
       if (user){
         let validation = await bcrypt.compare(password, user.password)
         validation ? res.json(user) : res.send({msg: "Wrong password"}) 
+    }else{
+      res.send({ msg: "No user registered with this email" })
     }
 
   }

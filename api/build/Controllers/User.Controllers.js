@@ -16,11 +16,9 @@ exports.deleteUser = exports.updateUser = exports.confirm = exports.createUser =
 const jwt_config_1 = require("../config/jwt.config");
 const users_1 = require("../Models/users");
 const bcrypt_1 = __importDefault(require("bcrypt"));
-const dotenv_1 = __importDefault(require("dotenv"));
 const jwt_config_2 = require("../config/jwt.config");
 const mail_config_1 = require("../config/mail.config");
 const uuid_1 = require("uuid");
-dotenv_1.default.config();
 const BCRYPT_SALT_ROUNDS = 12;
 // get all users
 const getUsers = (_req, res) => __awaiter(void 0, void 0, void 0, function* () {
@@ -33,10 +31,9 @@ const getUsers = (_req, res) => __awaiter(void 0, void 0, void 0, function* () {
     }
 });
 exports.getUsers = getUsers;
-// get user by id
+// get user by id & get user vy email para login
 const getUser = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const { email, password } = req.body;
-    console.log(email);
     if (req.params.id) {
         try {
             const user = yield users_1.User.findById(req.params.id);
@@ -52,6 +49,9 @@ const getUser = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
         if (user) {
             let validation = yield bcrypt_1.default.compare(password, user.password);
             validation ? res.json(user) : res.send({ msg: "Wrong password" });
+        }
+        else {
+            res.send({ msg: "No user registered with this email" });
         }
     }
 });

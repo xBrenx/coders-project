@@ -58,9 +58,28 @@ export const getTemplate = (email: any,token: any)=>{
       </div>
     `};
 
+    export const getForgotPassTemplate = (email: any,token: any)=>{
+      return `
+          <head>
+              <link rel="stylesheet" href="./style.css">
+          </head>
+          
+          <div id="email___content">
+              <img src="https://www.flickr.com/photos/197399024@N05/52623616952/in/dateposted-public/" alt="">
+              <h2>Hola ${ email }</h2>
+              <p>Para establecer una nueva contraseña has click en el siguiente enlace</p>
+              <a
+                  href="http://localhost:3001/pasword/reset/${token}"
+                  target="_blank"
+              >Establecer nueva contraseña</a>
+          </div>
+        `};
+    
+
 
 
     module.exports= {
       sendEmail,
       getTemplate,
+      getForgotPassTemplate
     }
