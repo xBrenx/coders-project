@@ -14,11 +14,31 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = require("express");
 const AllPopularMovies_Controllers_1 = __importDefault(require("../Controllers/AllPopularMovies.Controllers"));
+const top_ratedMovies_1 = __importDefault(require("../Controllers/top_ratedMovies"));
+const upcomingMovies_1 = __importDefault(require("../Controllers/upcomingMovies"));
 const router = (0, express_1.Router)();
 router.get("/populars", (_req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const allPopulars = yield (0, AllPopularMovies_Controllers_1.default)();
         res.status(200).send(allPopulars);
+    }
+    catch (error) {
+        res.status(400).send(error);
+    }
+}));
+router.get("/top", (_req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        const allTop = yield (0, top_ratedMovies_1.default)();
+        res.status(200).send(allTop);
+    }
+    catch (error) {
+        res.status(400).send(error);
+    }
+}));
+router.get("/upcoming", (_req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        const allUpcoming = yield (0, upcomingMovies_1.default)();
+        res.status(200).send(allUpcoming);
     }
     catch (error) {
         res.status(400).send(error);

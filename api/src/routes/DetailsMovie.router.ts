@@ -1,4 +1,4 @@
-import { Router } from "express";
+import { Router } from "express"; 
 import detailMovie from "../Controllers/MovieDetails";
 
 const router = Router();
