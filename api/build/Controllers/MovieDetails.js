@@ -37,11 +37,10 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const axios_1 = __importDefault(require("axios"));
 const dotenv = __importStar(require("dotenv"));
-dotenv.config();
+const ConstantesTMDB_1 = __importDefault(require("./ConstantesTMDB"));
 //keys importantes----------------------------------
+dotenv.config();
 const KEY = process.env.KEY;
-const IMAGE_PATH = process.env.IMAGE_PATH;
-const IMAGE_500 = process.env.IMAGE_500;
 function detailMovie(id) {
     return __awaiter(this, void 0, void 0, function* () {
         let data = {};
@@ -51,8 +50,8 @@ function detailMovie(id) {
                 belongs_to_collection = {
                     belongs: true,
                     name: b.name,
-                    poster: IMAGE_PATH + b.poster_path,
-                    backdrop: IMAGE_PATH + b.backdrop_path
+                    poster: ConstantesTMDB_1.default.posterPath(b.poster_path),
+                    backdrop: ConstantesTMDB_1.default.backdropPath(b.backdrop_path)
                 };
             }
             return belongs_to_collection;
@@ -64,22 +63,22 @@ function detailMovie(id) {
             return genres;
         };
         const inMovie = (r) => {
-            console.log(r);
             data = {
+                id: id,
                 adult: r.adult,
                 title: r.original_title,
                 overview: r.overview,
-                backdrop: IMAGE_PATH + r.backdrop_path,
-                poster: IMAGE_PATH + r.poster_path,
+                backdrop: ConstantesTMDB_1.default.backdropPath(r.backdrop_path),
+                poster: ConstantesTMDB_1.default.posterPath(r.poster_path),
                 collection: inCollection(r.belongs_to_collection),
-                production: { name: r.production_companies[0].name, logo: IMAGE_500 + r.production_companies[0].logo_path },
+                production: { name: r.production_companies[0].name, logo: ConstantesTMDB_1.default.posterPath(r.production_companies[0].logo_path) },
                 genres: inGenre(r.genres),
                 vote_average: r.vote_average,
                 vote_count: r.vote_count
             };
             return data;
         };
-        yield (0, axios_1.default)(`https://api.themoviedb.org/3/movie/${id}?api_key=${KEY}`)
+        yield (0, axios_1.default)(`${ConstantesTMDB_1.default.baseUrl}movie/${id}${KEY}`)
             .then(res => inMovie(res.data))
             .then(data => data)
             .catch(error => console.log(error));

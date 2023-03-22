@@ -1,43 +1,13 @@
 import axios from "axios";
 import * as dotenv from "dotenv"
-
-dotenv.config()
-
-//keys importantes----------------------------------
-
-const KEY = process.env.KEY;
-const IMAGE_PATH = process.env.IMAGE_PATH;
-const IMAGE_500 = process.env.IMAGE_500;
+import tmdb from "./ConstantesTMDB";
 
 //INTERFACES----------------------------------
-//DEFINIMOS DATOS QUE ESPERA CADA PROPIEDAD---
+import { MovieDetails, collection } from "interfaces/movieInterfaces";
 
-interface collection {
-    belongs: boolean,
-    name: string,
-    poster: string,
-    backdrop: string,
-}
-
-interface production {
-  name: string,
-  logo: string
-}
-
-interface MovieDetails {
-    adult: boolean,
-    title: string,
-    overview: string,
-    backdrop: string,
-    poster: string,
-    collection: collection,
-    production: production,
-    genres: string[],
-    vote_average: number,
-    vote_count: number
-
-}
-
+//keys importantes----------------------------------
+dotenv.config()
+const KEY = process.env.KEY;
 
 export default async function detailMovie(id: number){
 
@@ -50,8 +20,8 @@ export default async function detailMovie(id: number){
           belongs_to_collection = {
             belongs: true,
             name: b.name,
-            poster: IMAGE_PATH + b.poster_path,
-            backdrop: IMAGE_PATH + b.backdrop_path
+            poster: tmdb.posterPath(b.poster_path),
+            backdrop: tmdb.backdropPath(b.backdrop_path)
           };
         }
       
@@ -66,15 +36,15 @@ export default async function detailMovie(id: number){
       };
 
     const inMovie = (r: any) => {
-      console.log(r)
         data = {
+          id: id,
         adult: r.adult,
         title: r.original_title,
         overview: r.overview,
-        backdrop: IMAGE_PATH + r.backdrop_path,
-        poster: IMAGE_PATH + r.poster_path,
+        backdrop: tmdb.backdropPath(r.backdrop_path),
+        poster: tmdb.posterPath(r.poster_path),
         collection: inCollection(r.belongs_to_collection),
-        production: {name: r.production_companies[0].name, logo: IMAGE_500 + r.production_companies[0].logo_path},
+        production: {name: r.production_companies[0].name, logo: tmdb.posterPath(r.production_companies[0].logo_path)},
         genres: inGenre(r.genres),
         vote_average: r.vote_average,
         vote_count: r.vote_count
@@ -83,7 +53,7 @@ export default async function detailMovie(id: number){
       };
       
 
-      await axios(`https://api.themoviedb.org/3/movie/${id}?api_key=${KEY}`)
+      await axios(`${tmdb.baseUrl}movie/${id}${KEY}`)
       .then(res => inMovie(res.data))
       .then(data => data)
       .catch(error => console.log(error))
